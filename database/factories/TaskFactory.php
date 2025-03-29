@@ -23,7 +23,7 @@ final class TaskFactory extends Factory
     {
         $userIds = array_column(User::all('id')->toArray(), 'id');
         return [
-            'name' => $this->faker->text(255),
+            'name' => $this->faker->text(50),
             'user_id' => $this->faker->randomElement($userIds),
             'description' => $this->faker->text(255),
             'due_date' => $this->faker->dateTimeBetween('now', '+1 years'),

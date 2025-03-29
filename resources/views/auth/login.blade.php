@@ -1,5 +1,5 @@
 <x-base>
-    <div class="w-full max-w-md">
+    <div class="w-full h-full flex flex-col justify-center items-center">
         <div class="mb-5">
             <h1 class="text-2xl font-bold text-center text-gray-800">Login</h1>
         </div>
@@ -8,7 +8,7 @@
                 @if (Session::has('registered'))
                     <p class="text-green-500 font-medium text-center mb-2">Account created successfully! You can now log in with your credentials.</p>
                 @endif
-                <form method="POST" action="{{ route('login') }}">
+                <form class="md:min-w-96" method="POST" action="{{ route('login') }}">
                     <div class="mb-4">
                         <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                         <input name="email" type="email" id="email"

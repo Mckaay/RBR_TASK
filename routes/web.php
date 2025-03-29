@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web'])->group(function (): void {
@@ -12,7 +13,7 @@ Route::middleware(['web'])->group(function (): void {
 });
 
 Route::middleware(['web', 'auth'])->group(function (): void {
-    Route::get('/', fn() => 'Youre Authenticated')->name('dashboard');
+    Route::get('/', [TaskController::class, 'index'])->name('dashboard');
 });
 
 require __DIR__ . '/auth.php';

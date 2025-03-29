@@ -1,11 +1,11 @@
 <x-base>
-    <div class="w-full max-w-md">
+    <div class="w-full h-full flex flex-col justify-center items-center">
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="p-6 border-b border-gray-200">
                 <h1 class="text-2xl font-bold text-center text-gray-800">Create Account</h1>
             </div>
             <div class="p-6">
-                <form method="POST" action="{{ route('register') }}">
+                <form class="md:min-w-96" method="POST" action="{{ route('register') }}">
                     <div class="mb-4">
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>

@@ -14,9 +14,14 @@ final class TaskSeeder extends Seeder
     {
 
         $testingUser = User::where('email', 'test@example.com')->first('id');
+        $secondTestingUser = User::where('email', 'test@test.com')->first('id');
 
         Task::factory()->count(10)->create([
             'user_id' => $testingUser->id,
+        ]);
+
+        Task::factory()->count(10)->create([
+            'user_id' => $secondTestingUser->id,
         ]);
         Task::factory()->count(200)->create();
     }
