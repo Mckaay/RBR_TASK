@@ -6,7 +6,7 @@
     <title>To Do App</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
+<body class="w-screen h-screen flex items-center justify-center">
 {{ $slot }}
 </body>
 </html>

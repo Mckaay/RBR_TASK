@@ -9,13 +9,12 @@ use Tests\TestCase;
 
 final class ExampleTest extends TestCase
 {
-    /**
-     * A basic test example.
-     */
-    public function test_the_application_returns_a_successful_response(): void
+    public function test_if_not_logged_in_user_gets_redirected_to_login_route(): void
     {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        $this->assertGuest();
+        $response->assertStatus(302);
+        $response->assertRedirect(route('login'));
     }
 }
