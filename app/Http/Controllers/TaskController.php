@@ -17,4 +17,11 @@ final class TaskController extends Controller
             'tasks' => Task::all(),
         ]);
     }
+
+    public function show(Task $task): Factory|View|Application|\Illuminate\View\View
+    {
+        return view('tasks.show', [
+            'task' => $task,
+        ]);
+    }
 }

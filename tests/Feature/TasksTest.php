@@ -21,7 +21,7 @@ final class TasksTest extends TestCase
     }
 
 
-    public function test_if_user_can_see_his_tasks(): void
+    public function test_if_user_can_see_his_tasks_in_listing(): void
     {
         $testingUser = User::firstWhere('email', 'test@example.com');
         $this->actingAs($testingUser);
@@ -31,7 +31,7 @@ final class TasksTest extends TestCase
         $response->assertViewHas('tasks', Task::where('user_id', $testingUser->id)->get());
     }
 
-    public function test_if_user_cant_see_other_tasks(): void
+    public function test_if_user_cant_see_other_tasks_in_listing(): void
     {
         $firstTestingUser = User::firstWhere('email', 'test@example.com');
         $secondTestingUser = User::firstWhere('email', 'test@test.com');
@@ -50,5 +50,30 @@ final class TasksTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('tasks.index');
         $response->assertViewHas('tasks', $secondTestingUserTasks);
+    }
+
+    public function test_if_user_can_view_his_task(): void
+    {
+        $firstUser = User::firstWhere('email', 'test@example.com');
+        $this->actingAs($firstUser);
+        $tasks = Task::all();
+
+        $response = $this->get('/task/' . $tasks->first()->id);
+
+        $response->assertStatus(200);
+        $response->assertViewIs('tasks.show');
+        $response->assertViewHas('task', $tasks->first());
+    }
+
+    public function test_if_user_cant_view_others_task(): void
+    {
+        $firstUser = User::firstWhere('email', 'test@example.com');
+        $this->actingAs($firstUser);
+        $firstUserTasks = Task::all();
+
+        $secondUser = User::firstWhere('email', 'test@test.com');
+        $this->actingAs($secondUser);
+        $response = $this->get('/task/' . $firstUserTasks->first()->id);
+        $response->assertStatus(404);
     }
 }

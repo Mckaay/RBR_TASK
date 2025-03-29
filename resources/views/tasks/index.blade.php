@@ -29,57 +29,57 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($tasks as $task)
-                            <tr>
+                            <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('task.show', $task->id) }}'">
                                 <td class="px-6 py-4 whitespace-nowrap"> {{ $task->name }}</td>
                                 @if ($task->status === \App\Enums\Status::TO_DO->value)
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            class="px-2 inline-flex text-xs uppercase leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                        {{ $task->status }}
-                                    </span>
+                                    <span
+                                        class="px-2 inline-flex text-xs uppercase leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                    {{ $task->status }}
+                                </span>
                                     </td>
                                 @elseif ($task->status === \App\Enums\Status::IN_PROGRESS->value)
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            class="px-2 inline-flex text-xs uppercase leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                        {{ $task->status }}
-                                    </span>
+                                    <span
+                                        class="px-2 inline-flex text-xs uppercase leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    {{ $task->status }}
+                                </span>
                                     </td>
                                 @else
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            class="px-2 inline-flex text-xs uppercase leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        {{ $task->status }}
-                                    </span>
+                                    <span
+                                        class="px-2 inline-flex text-xs uppercase leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    {{ $task->status }}
+                                </span>
                                     </td>
                                 @endif
                                 @if ($task->priority === \App\Enums\Priority::LOW->value)
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            class="px-2 inline-flex text-xs uppercase leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                        {{ $task->priority }}
-                                    </span>
+                                    <span
+                                        class="px-2 inline-flex text-xs uppercase leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                    {{ $task->priority }}
+                                </span>
                                     </td>
                                 @elseif ($task->priority === \App\Enums\Priority::MEDIUM->value)
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            class="px-2 inline-flex text-xs uppercase leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
-                                        {{ $task->priority }}
-                                    </span>
+                                    <span
+                                        class="px-2 inline-flex text-xs uppercase leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
+                                    {{ $task->priority }}
+                                </span>
                                     </td>
                                 @else
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            class="px-2 inline-flex text-xs uppercase leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                        {{ $task->priority }}
-                                    </span>
+                                    <span
+                                        class="px-2 inline-flex text-xs uppercase leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                    {{ $task->priority }}
+                                </span>
                                     </td>
                                 @endif
                                 <td class="px-6 py-4 whitespace-nowrap"> {{ $task->due_date }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td class="font-bold px-6 py-4 whitespace-nowrap">You currently don't have any tasks.
+                                <td colspan="4" class="font-bold px-6 py-4 whitespace-nowrap">You currently don't have any tasks.
                                     Add some
                                 </td>
                             </tr>
