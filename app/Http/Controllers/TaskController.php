@@ -32,6 +32,24 @@ final class TaskController extends Controller
         return view('task.create');
     }
 
+    public function showUpdateForm(Task $task): Factory|View|Application|\Illuminate\View\View
+    {
+        return view('task.edit', [
+            'task' => $task,
+        ]);
+    }
+
+    public function update(StoreTaskRequest $request, Task $task): RedirectResponse
+    {
+        $updated = $task->update($request->validated());
+
+        if ( ! $updated) {
+            return redirect()->back()->with('error', 'Failed to update task. Please try again.');
+        }
+
+        return redirect()->route('task.index')->with('success', 'Task Updated successfully!');
+    }
+
     public function store(StoreTaskRequest $request): RedirectResponse
     {
         $task = Task::create($request->validated());
@@ -39,5 +57,16 @@ final class TaskController extends Controller
             return redirect()->back()->with('error', 'Failed to create task. Please try again.');
         }
         return redirect()->route('task.index')->with('success', 'Task created successfully!');
+    }
+
+    public function delete(Task $task): RedirectResponse
+    {
+        $deleted = $task->delete();
+
+        if ( ! $deleted) {
+            return redirect()->back()->with('error', 'Failed to delete task. Please try again.');
+        }
+
+        return redirect()->route('task.index')->with('success', 'Task deleted successfully!');
     }
 }

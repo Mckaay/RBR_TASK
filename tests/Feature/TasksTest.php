@@ -187,4 +187,152 @@ final class TasksTest extends TestCase
             'name' => 'Test Task',
         ]);
     }
+
+
+    public function test_authenticated_user_can_see_edit_form(): void
+    {
+        $user = User::firstWhere('email', 'test@example.com');
+        $this->actingAs($user);
+
+        $task = Task::where('user_id', $user->id)->first();
+
+        $response = $this->get(route('task.edit', $task->id));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('task.edit');
+        $response->assertViewHas('task', $task);
+    }
+
+    public function test_user_cannot_edit_other_users_task(): void
+    {
+        $firstUser = User::firstWhere('email', 'test@example.com');
+        $secondUser = User::firstWhere('email', 'test@test.com');
+
+        $this->actingAs($firstUser);
+        $firstUserTask = Task::where('user_id', $firstUser->id)->first();
+
+        $this->actingAs($secondUser);
+        $response = $this->get(route('task.edit', $firstUserTask->id));
+
+        $response->assertStatus(404);
+    }
+
+    public function test_authenticated_user_can_update_task(): void
+    {
+        $user = User::firstWhere('email', 'test@example.com');
+        $this->actingAs($user);
+
+        $task = Task::where('user_id', $user->id)->first();
+
+        $updatedData = [
+            'user_id' => $user->id,
+            'name' => 'Updated Task Name',
+            'description' => 'This is an updated description',
+            'status' => Status::IN_PROGRESS->value,
+            'priority' => Priority::HIGH->value,
+            'due_date' => now()->addDays(14)->format('Y-m-d'),
+        ];
+
+        $response = $this->patch(route('task.update', $task->id), $updatedData);
+
+        $response->assertRedirect(route('task.index'));
+        $response->assertSessionHas('success', 'Task Updated successfully!');
+
+        $this->assertDatabaseHas('tasks', [
+            'id' => $task->id,
+            'name' => 'Updated Task Name',
+            'description' => 'This is an updated description',
+            'status' => Status::IN_PROGRESS->value,
+            'priority' => Priority::HIGH->value,
+        ]);
+    }
+
+    public function test_task_update_fails_with_invalid_data(): void
+    {
+        $user = User::firstWhere('email', 'test@example.com');
+        $this->actingAs($user);
+
+        $task = Task::where('user_id', $user->id)->first();
+
+        $invalidData = [
+            'user_id' => $user->id,
+            'name' => '',
+            'description' => 'Description is valid',
+            'status' => Status::DONE->value,
+            'priority' => Priority::LOW->value,
+            'due_date' => now()->format('Y-m-d'),
+        ];
+
+        $response = $this->patch(route('task.update', $task->id), $invalidData);
+
+        $response->assertSessionHasErrors(['name']);
+        $response->assertRedirect();
+    }
+
+    public function test_user_cannot_update_other_users_task(): void
+    {
+        $firstUser = User::firstWhere('email', 'test@example.com');
+        $secondUser = User::firstWhere('email', 'test@test.com');
+
+        $this->actingAs($firstUser);
+        $firstUserTask = Task::where('user_id', $firstUser->id)->first();
+
+        $this->actingAs($secondUser);
+
+        $updatedData = [
+            'user_id' => $secondUser->id,
+            'name' => 'Trying to update someone else\'s task',
+            'description' => 'This should not work',
+            'status' => Status::DONE->value,
+            'priority' => Priority::LOW->value,
+            'due_date' => now()->format('Y-m-d'),
+        ];
+
+        $response = $this->patch(route('task.update', $firstUserTask->id), $updatedData);
+
+        $response->assertStatus(404);
+
+        $this->assertDatabaseMissing('tasks', [
+            'id' => $firstUserTask->id,
+            'name' => 'Trying to update someone else\'s task',
+        ]);
+    }
+
+    public function test_authenticated_user_can_delete_task(): void
+    {
+        $user = User::firstWhere('email', 'test@example.com');
+        $this->actingAs($user);
+
+        $task = Task::where('user_id', $user->id)->first();
+        $taskId = $task->id;
+
+        $response = $this->delete(route('task.delete', $task->id));
+
+        $response->assertRedirect(route('task.index'));
+        $response->assertSessionHas('success', 'Task deleted successfully!');
+
+        $this->assertDatabaseMissing('tasks', [
+            'id' => $taskId,
+        ]);
+    }
+
+    public function test_user_cannot_delete_other_users_task(): void
+    {
+        $firstUser = User::firstWhere('email', 'test@example.com');
+        $secondUser = User::firstWhere('email', 'test@test.com');
+
+        $this->actingAs($firstUser);
+        $firstUserTask = Task::where('user_id', $firstUser->id)->first();
+        $taskId = $firstUserTask->id;
+
+        $this->actingAs($secondUser);
+
+        $response = $this->delete(route('task.delete', $firstUserTask->id));
+
+        $response->assertStatus(404);
+
+        $this->assertDatabaseHas('tasks', [
+            'id' => $taskId,
+        ]);
+    }
 }

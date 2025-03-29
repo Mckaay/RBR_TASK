@@ -18,15 +18,19 @@
                         Created on {{ $task->created_at }}
                     </p>
                 </div>
-                <div class="flex space-x-2">
-                    <a href="#"
+                 <div class="flex space-x-2">
+                    <a href="{{ route('task.edit', $task->id) }}"
                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <i class="fas fa-edit mr-2"></i> Edit
                     </a>
-                    <button
-                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                        <i class="fas fa-trash-alt mr-2"></i> Delete
-                    </button>
+                     <form action="{{ route('task.delete', $task->id) }}" method="POST" class="inline">
+                         @csrf
+                         @method('DELETE')
+                         <button type="submit"
+                                 class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                             <i class="fas fa-trash-alt mr-2"></i> Delete
+                         </button>
+                     </form>
                 </div>
             </div>
             <div class="border-t border-gray-200">
