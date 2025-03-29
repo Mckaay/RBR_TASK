@@ -4,24 +4,40 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTaskRequest;
 use App\Models\Task;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 
 final class TaskController extends Controller
 {
     public function index(): Factory|View|Application|\Illuminate\View\View
     {
-        return view('tasks.index', [
+        return view('task.index', [
             'tasks' => Task::all(),
         ]);
     }
 
     public function show(Task $task): Factory|View|Application|\Illuminate\View\View
     {
-        return view('tasks.show', [
+        return view('task.show', [
             'task' => $task,
         ]);
+    }
+
+    public function showCreateForm(): Factory|View|Application|\Illuminate\View\View
+    {
+        return view('task.create');
+    }
+
+    public function store(StoreTaskRequest $request): RedirectResponse
+    {
+        $task = Task::create($request->validated());
+        if ( ! $task) {
+            return redirect()->back()->with('error', 'Failed to create task. Please try again.');
+        }
+        return redirect()->route('task.index')->with('success', 'Task created successfully!');
     }
 }

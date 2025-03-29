@@ -14,6 +14,8 @@ Route::middleware(['web'])->group(function (): void {
 
 Route::middleware(['web', 'auth'])->group(function (): void {
     Route::get('/', [TaskController::class, 'index'])->name('task.index');
+    Route::get('/task/create', [TaskController::class, 'showCreateForm'])->name('task.create');
+    Route::post('/task', [TaskController::class, 'store'])->name('task.store');
     Route::get('/task/{task}', [TaskController::class, 'show'])->name('task.show');
 });
 
