@@ -34,6 +34,45 @@
                         </button>
                     </a>
                 </div>
+
+                <div class="mb-6 bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-medium text-gray-700 mb-3">Filter Tasks</h3>
+                    <form method="GET" action="{{ route('task.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <select id="status" name="status" class="p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
+                                <option value="all" {{ $filters['status'] === 'all' ? 'selected' : '' }}>All Statuses</option>
+                                @foreach($statuses as $status)
+                                    <option value="{{ $status->value }}" {{ $filters['status'] === $status->value ? 'selected' : '' }}>
+                                        {{ ucfirst($status->value) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                            <select id="priority" name="priority" class="p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
+                                <option value="all" {{ $filters['priority'] === 'all' ? 'selected' : '' }}>All Priorities</option>
+                                @foreach($priorities as $priority)
+                                    <option value="{{ $priority->value }}" {{ $filters['priority'] === $priority->value ? 'selected' : '' }}>
+                                        {{ ucfirst($priority->value) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="flex items-end space-x-2">
+                            <button type="submit" class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Apply Filters
+                            </button>
+                            <a href="{{ route('task.index') }}" class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Clear Filters
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tasks Table -->
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
@@ -108,8 +147,12 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="font-bold px-6 py-4 whitespace-nowrap">You currently don't have any tasks.
-                                    Add some
+                                <td colspan="4" class="font-bold px-6 py-4 whitespace-nowrap">
+                                    @if(request()->has('status') || request()->has('priority') || request()->has('due_date'))
+                                        No tasks match your filter criteria.
+                                    @else
+                                        You currently don't have any tasks. Add some
+                                    @endif
                                 </td>
                             </tr>
                         @endforelse

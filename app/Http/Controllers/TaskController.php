@@ -4,19 +4,39 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\Priority;
+use App\Enums\Status;
 use App\Http\Requests\StoreTaskRequest;
 use App\Models\Task;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 final class TaskController extends Controller
 {
-    public function index(): Factory|View|Application|\Illuminate\View\View
+    public function index(Request $request): Factory|View|Application|\Illuminate\View\View
     {
+        $query = Task::query();
+
+        if ($request->has('status') && 'all' !== $request->status) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('priority') && 'all' !== $request->priority) {
+            $query->where('priority', $request->priority);
+        }
+
         return view('task.index', [
-            'tasks' => Task::all(),
+            'tasks' => $query->get(),
+            'statuses' => Status::cases(),
+            'priorities' => Priority::cases(),
+            'filters' => [
+                'status' => $request->status ?? 'all',
+                'priority' => $request->priority ?? 'all',
+                'due_date' => $request->due_date ?? 'all',
+            ],
         ]);
     }
 

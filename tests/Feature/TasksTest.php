@@ -335,4 +335,32 @@ final class TasksTest extends TestCase
             'id' => $taskId,
         ]);
     }
+
+    public function test_status_filtering(): void
+    {
+        $user = User::firstWhere('email', 'test@example.com');
+        $this->actingAs($user);
+
+        $tasks = Task::query()->where('status', Status::IN_PROGRESS->value)->get();
+
+        $response = $this->get(route('task.index', ['status' => Status::IN_PROGRESS->value]));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('task.index');
+        $response->assertViewHas('tasks', $tasks);
+    }
+
+    public function test_priority_filtering(): void
+    {
+        $user = User::firstWhere('email', 'test@example.com');
+        $this->actingAs($user);
+
+        $tasks = Task::query()->where('priority', Priority::MEDIUM->value)->get();
+
+        $response = $this->get(route('task.index', ['priority' => Priority::MEDIUM->value]));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('task.index');
+        $response->assertViewHas('tasks', $tasks);
+    }
 }
