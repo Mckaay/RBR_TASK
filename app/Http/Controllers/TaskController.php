@@ -18,6 +18,11 @@ final class TaskController extends Controller
 {
     public function index(Request $request): Factory|View|Application|\Illuminate\View\View
     {
+        $request->validate([
+            'status' => 'nullable|string|in:all,' . implode(',', array_map(fn($status) => $status->value, Status::cases())),
+            'priority' => 'nullable|string|in:all,' . implode(',', array_map(fn($priority) => $priority->value, Priority::cases())),
+        ]);
+
         $query = Task::query();
 
         if ($request->has('status') && 'all' !== $request->status) {
@@ -35,7 +40,6 @@ final class TaskController extends Controller
             'filters' => [
                 'status' => $request->status ?? 'all',
                 'priority' => $request->priority ?? 'all',
-                'due_date' => $request->due_date ?? 'all',
             ],
         ]);
     }
@@ -76,6 +80,7 @@ final class TaskController extends Controller
         if ( ! $task) {
             return redirect()->back()->with('error', 'Failed to create task. Please try again.');
         }
+
         return redirect()->route('task.index')->with('success', 'Task created successfully!');
     }
 
