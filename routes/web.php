@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TaskShareTokenController;
+use App\Models\TaskShareToken;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web'])->group(function (): void {
@@ -20,6 +22,8 @@ Route::middleware(['web', 'auth'])->group(function (): void {
     Route::delete('/task/delete/{task}', [TaskController::class, 'delete'])->name('task.delete');
     Route::post('/task', [TaskController::class, 'store'])->name('task.store');
     Route::get('/task/{task}', [TaskController::class, 'show'])->name('task.show');
+    Route::get('/task/share/{token}', [TaskShareTokenController::class, 'share'])->name('task.share');
+    Route::post('/task/token/create/{task}', [TaskShareTokenController::class, 'create'])->name('task.share.create');
 });
 
 require __DIR__ . '/auth.php';

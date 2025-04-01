@@ -8,6 +8,7 @@ use App\Enums\Priority;
 use App\Enums\Status;
 use App\Http\Requests\StoreTaskRequest;
 use App\Models\Task;
+use App\Models\TaskShareToken;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
