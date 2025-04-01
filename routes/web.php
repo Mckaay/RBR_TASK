@@ -3,8 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\TaskController;
-use App\Http\Controllers\TaskShareTokenController;
-use App\Models\TaskShareToken;
+use App\Http\Controllers\TaskShareController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web'])->group(function (): void {
@@ -15,15 +14,22 @@ Route::middleware(['web'])->group(function (): void {
 });
 
 Route::middleware(['web', 'auth'])->group(function (): void {
-    Route::get('/', [TaskController::class, 'index'])->name('task.index');
-    Route::patch('/task/{task}', [TaskController::class, 'update'])->name('task.update');
-    Route::get('/task/create', [TaskController::class, 'showCreateForm'])->name('task.create');
-    Route::get('/task/update/{task}', [TaskController::class, 'showUpdateForm'])->name('task.edit');
-    Route::delete('/task/delete/{task}', [TaskController::class, 'delete'])->name('task.delete');
-    Route::post('/task', [TaskController::class, 'store'])->name('task.store');
-    Route::get('/task/{task}', [TaskController::class, 'show'])->name('task.show');
-    Route::get('/task/share/{token}', [TaskShareTokenController::class, 'share'])->name('task.share');
-    Route::post('/task/token/create/{task}', [TaskShareTokenController::class, 'create'])->name('task.share.create');
+    // Task routes
+    Route::prefix('task')->name('task.')->group(function (): void {
+        Route::get('/', [TaskController::class, 'index'])->name('index');
+        Route::get('/create', [TaskController::class, 'create'])->name('create');
+        Route::post('/', [TaskController::class, 'store'])->name('store');
+        Route::get('/{task}', [TaskController::class, 'show'])->name('show');
+        Route::get('/update/{task}', [TaskController::class, 'edit'])->name('edit');
+        Route::patch('/{task}', [TaskController::class, 'update'])->name('update');
+        Route::delete('/{task}', [TaskController::class, 'destroy'])->name('delete');
+
+        // Task sharing routes
+        Route::get('/share/{token}', [TaskShareController::class, 'show'])->name('share');
+        Route::post('/share/{task}', [TaskShareController::class, 'store'])->name('share.create');
+    });
+
+    Route::get('/', fn() => redirect()->route('task.index'));
 });
 
 require __DIR__ . '/auth.php';

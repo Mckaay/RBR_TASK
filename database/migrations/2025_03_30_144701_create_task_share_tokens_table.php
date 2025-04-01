@@ -14,7 +14,7 @@ return new class () extends Migration {
     {
         Schema::create('task_share_tokens', function (Blueprint $table): void {
             $table->id();
-            $table->foreignIdFor(App\Models\Task::class);
+            $table->foreignIdFor(App\Models\Task::class)->constrained()->cascadeOnDelete();
             $table->dateTime('expires_at');
             $table->string('token');
             $table->timestamps();

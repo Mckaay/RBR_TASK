@@ -27,7 +27,7 @@ final class TasksTest extends TestCase
     {
         $testingUser = User::firstWhere('email', 'test@example.com');
         $this->actingAs($testingUser);
-        $response = $this->get('/');
+        $response = $this->get('/task');
         $response->assertStatus(200);
         $response->assertViewIs('task.index');
         $response->assertViewHas('tasks', Task::where('user_id', $testingUser->id)->get());
@@ -41,14 +41,14 @@ final class TasksTest extends TestCase
 
         $this->actingAs($firstTestingUser);
         $firstTestingUserTasks = Task::all();
-        $response = $this->get('/');
+        $response = $this->get('/task');
         $response->assertStatus(200);
         $response->assertViewIs('task.index');
         $response->assertViewHas('tasks', $firstTestingUserTasks);
 
         $this->actingAs($secondTestingUser);
         $secondTestingUserTasks = Task::all();
-        $response = $this->get('/');
+        $response = $this->get('/task');
         $response->assertStatus(200);
         $response->assertViewIs('task.index');
         $response->assertViewHas('tasks', $secondTestingUserTasks);
@@ -134,10 +134,10 @@ final class TasksTest extends TestCase
         $response->assertRedirect();
 
         $response->assertSessionHasErrors([
-            'name' => 'The task name is required.',
-            'status' => 'The task status is required.',
-            'priority' => 'The task priority is required.',
-            'due_date' => 'The due date is required.',
+            'name' => 'The name field is required.',
+            'status' => 'The status field is required.',
+            'priority' => 'The priority field is required.',
+            'due_date' => 'The due date field is required.',
         ]);
     }
 
@@ -236,7 +236,7 @@ final class TasksTest extends TestCase
         $response = $this->patch(route('task.update', $task->id), $updatedData);
 
         $response->assertRedirect(route('task.index'));
-        $response->assertSessionHas('success', 'Task Updated successfully!');
+        $response->assertSessionHas('success', 'Task updated successfully!');
 
         $this->assertDatabaseHas('tasks', [
             'id' => $task->id,

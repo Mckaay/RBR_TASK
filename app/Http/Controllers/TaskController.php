@@ -4,80 +4,71 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Enums\Priority;
-use App\Enums\Status;
+use App\DataObjects\TaskDTO;
+use App\DataObjects\TaskFilterDTO;
 use App\Http\Requests\StoreTaskRequest;
 use App\Models\Task;
-use App\Models\TaskShareToken;
-use Illuminate\Contracts\View\Factory;
+use App\Repositories\TaskRepository;
 use Illuminate\Contracts\View\View;
-use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 final class TaskController extends Controller
 {
-    public function index(Request $request): Factory|View|Application|\Illuminate\View\View
+    public function __construct(
+        private TaskRepository $taskRepository,
+    ) {}
+
+    public function index(Request $request): View
     {
-        $request->validate([
-            'status' => 'nullable|string|in:all,' . implode(',', array_map(fn($status) => $status->value, Status::cases())),
-            'priority' => 'nullable|string|in:all,' . implode(',', array_map(fn($priority) => $priority->value, Priority::cases())),
-        ]);
-
-        $query = Task::query();
-
-        if ($request->has('status') && 'all' !== $request->status) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->has('priority') && 'all' !== $request->priority) {
-            $query->where('priority', $request->priority);
-        }
+        $filters = TaskFilterDTO::fromRequest($request);
 
         return view('task.index', [
-            'tasks' => $query->get(),
-            'statuses' => Status::cases(),
-            'priorities' => Priority::cases(),
-            'filters' => [
-                'status' => $request->status ?? 'all',
-                'priority' => $request->priority ?? 'all',
-            ],
+            'tasks' => $this->taskRepository->getAll($filters),
+            'statuses' => $this->taskRepository->getStatuses(),
+            'priorities' => $this->taskRepository->getPriorities(),
+            'filters' => $filters->toArray(),
         ]);
     }
 
-    public function show(Task $task): Factory|View|Application|\Illuminate\View\View
+    public function show(Task $task): View
     {
-        return view('task.show', [
-            'task' => $task,
+        return view('task.show', ['task' => $task]);
+    }
+
+    public function create(): View
+    {
+        return view('task.create', [
+            'statuses' => $this->taskRepository->getStatuses(),
+            'priorities' => $this->taskRepository->getPriorities(),
         ]);
     }
 
-    public function showCreateForm(): Factory|View|Application|\Illuminate\View\View
-    {
-        return view('task.create');
-    }
-
-    public function showUpdateForm(Task $task): Factory|View|Application|\Illuminate\View\View
+    public function edit(Task $task): View
     {
         return view('task.edit', [
             'task' => $task,
+            'statuses' => $this->taskRepository->getStatuses(),
+            'priorities' => $this->taskRepository->getPriorities(),
         ]);
     }
 
     public function update(StoreTaskRequest $request, Task $task): RedirectResponse
     {
-        $updated = $task->update($request->validated());
+        $taskDTO = TaskDTO::fromRequest($request);
 
-        if ( ! $updated) {
+        if ( ! $this->taskRepository->update($task, $taskDTO)) {
             return redirect()->back()->with('error', 'Failed to update task. Please try again.');
         }
 
-        return redirect()->route('task.index')->with('success', 'Task Updated successfully!');
+        return redirect()->route('task.index')->with('success', 'Task updated successfully!');
     }
 
     public function store(StoreTaskRequest $request): RedirectResponse
     {
-        $task = Task::create($request->validated());
+        $taskDTO = TaskDTO::fromRequest($request);
+        $task = $this->taskRepository->create($taskDTO);
+
         if ( ! $task) {
             return redirect()->back()->with('error', 'Failed to create task. Please try again.');
         }
@@ -85,11 +76,9 @@ final class TaskController extends Controller
         return redirect()->route('task.index')->with('success', 'Task created successfully!');
     }
 
-    public function delete(Task $task): RedirectResponse
+    public function destroy(Task $task): RedirectResponse
     {
-        $deleted = $task->delete();
-
-        if ( ! $deleted) {
+        if ( ! $this->taskRepository->delete($task)) {
             return redirect()->back()->with('error', 'Failed to delete task. Please try again.');
         }
 
