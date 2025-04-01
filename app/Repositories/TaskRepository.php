@@ -25,6 +25,10 @@ final class TaskRepository implements TaskRepositoryInterface
             $query->where('priority', $filters->getPriorityForQuery());
         }
 
+        if ($filters->hasDueDateSort()) {
+            $query->orderBy('due_date', $filters->getDueDateSortDirection());
+        }
+
         return $query->get();
     }
 

@@ -55,6 +55,16 @@
                                 @endforeach
                             </select>
                         </div>
+
+                        <div>
+                            <label for="due_date_sort" class="block text-sm font-medium text-gray-700 mb-1">Due Date Order</label>
+                            <select id="due_date_sort" name="due_date_sort" class="p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
+                                <option value="none" {{ ($filters['due_date_sort'] ?? 'none') === 'none' ? 'selected' : '' }}>No Sorting</option>
+                                <option value="asc" {{ ($filters['due_date_sort'] ?? 'none') === 'asc' ? 'selected' : '' }}>Earliest First</option>
+                                <option value="desc" {{ ($filters['due_date_sort'] ?? 'none') === 'desc' ? 'selected' : '' }}>Latest First</option>
+                            </select>
+                        </div>
+
                         <div class="flex items-end space-x-2">
                             <button type="submit" class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 Apply Filters
@@ -65,8 +75,6 @@
                         </div>
                     </form>
                 </div>
-
-                <!-- Tasks Table -->
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
@@ -86,6 +94,11 @@
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Due Date
+                                @if(($filters['due_date_sort'] ?? 'none') === 'asc')
+                                    <span class="ml-1">↑</span>
+                                @elseif(($filters['due_date_sort'] ?? 'none') === 'desc')
+                                    <span class="ml-1">↓</span>
+                                @endif
                             </th>
                         </tr>
                         </thead>
@@ -142,7 +155,7 @@
                         @empty
                             <tr>
                                 <td colspan="4" class="font-bold px-6 py-4 whitespace-nowrap">
-                                    @if(request()->has('status') || request()->has('priority') || request()->has('due_date'))
+                                    @if(request()->has('status') || request()->has('priority') || request()->has('due_date_sort'))
                                         No tasks match your filter criteria.
                                     @else
                                         You currently don't have any tasks. Add some
